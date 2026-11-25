@@ -3,6 +3,7 @@ import sqlite3
 
 from flask import (
     Blueprint,
+    current_app,
     flash,
     redirect,
     render_template,
@@ -47,6 +48,13 @@ def register():
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         confirm = request.form.get("confirm", "")
+        support_key = request.form.get("support_key", "").strip()
+        configured_key = current_app.config.get("SUPPORT_SIGNUP_KEY", "")
+        role = (
+            "support"
+            if support_key and configured_key and support_key == configured_key
+            else "client"
+        )
 
         errors = []
         if len(username) < 3:
@@ -65,9 +73,12 @@ def register():
                     username,
                     email,
                     generate_password_hash(password),
-                    role="client",
+                    role=role,
                 )
-                flash("Registration successful. Please log in.", "success")
+                if role == "support":
+                    flash("Support account created. Please log in.", "success")
+                else:
+                    flash("Registration successful. Please log in.", "success")
                 return redirect(url_for("auth.login"))
             except sqlite3.IntegrityError:
                 errors.append("Username or email is already taken.")

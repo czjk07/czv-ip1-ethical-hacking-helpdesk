@@ -5,7 +5,7 @@
   <div class="col-md-6 col-lg-5">
     <div class="card shadow-sm">
       <div class="card-body p-4">
-        <h1 class="h4 mb-3 text-center">Create a client account</h1>
+        <h1 class="h4 mb-3 text-center">Create an account</h1>
         <form method="post" action="{{ url_for('auth.register') }}">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -22,6 +22,10 @@
           <div class="mb-3">
             <label for="confirm" class="form-label">Confirm password</label>
             <input type="password" class="form-control" id="confirm" name="confirm" minlength="6" required>
+          </div>
+          <div class="mb-3">
+            <label for="support_key" class="form-label">Support signup key <span class="text-muted">(optional, for support staff only)</span></label>
+            <input type="password" class="form-control" id="support_key" name="support_key" autocomplete="off">
           </div>
           <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>

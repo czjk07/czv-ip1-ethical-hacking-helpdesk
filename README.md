@@ -5,7 +5,7 @@ A complete helpdesk web application built with **Python (Flask)**, **SQLite** an
 ## Features
 
 - User registration (`/register`) and login (`/login`) with session management and hashed passwords (Werkzeug).
-- Two roles: `client` (default, created via registration) and `support` (admin, created via CLI command).
+- Two roles: `client` (default, created via registration) and `support` (admin, created via CLI command or via the support signup key on `/register`).
 - Client dashboard (`/dashboard`) listing your own tickets with a "Create New Ticket" button.
 - Ticket creation (`/ticket/new`) with title, description, priority (Low / Medium / High) and an optional attachment (PDF / PNG / JPG, max 5 MB) saved to `uploads/`.
 - Ticket detail page (`/ticket/<id>`) with attachment link and a comments/replies section.
@@ -25,11 +25,13 @@ Uploaded files and the SQLite database are persisted in the named volumes `uploa
 
 ### Create a support (admin) account
 
+Via the CLI (prompts for a password):
+
 ```bash
 docker compose exec web flask create-support admin admin@example.com
 ```
 
-You will be prompted for a password (or pass `--password` to skip the prompt).
+Or self-service: set `SUPPORT_SIGNUP_KEY` (e.g. in a `.env` file next to `docker-compose.yml` or as an environment variable) and share it with support staff. Anyone who enters that key in the optional "Support signup key" field on `/register` gets a `support` account. If the variable is unset, the field has no effect and everyone registers as a client.
 
 ## Run locally without Docker
 
@@ -65,6 +67,7 @@ requirements.txt
 | Variable         | Default                              | Purpose                     |
 |------------------|--------------------------------------|-----------------------------|
 | `SECRET_KEY`     | dev placeholder                      | Flask session signing key   |
+| `SUPPORT_SIGNUP_KEY` | unset                             | Key that turns /register into a support account |
 | `DATABASE_PATH`  | `data/helpdesk.db`                   | SQLite database file        |
 | `UPLOAD_FOLDER`  | `uploads/`                           | Attachment storage folder   |
 

@@ -6,6 +6,7 @@ services:
       - "5000:5000"
     environment:
       SECRET_KEY: ${SECRET_KEY:-dev-only-secret-key-change-in-production}
+      SUPPORT_SIGNUP_KEY: ${SUPPORT_SIGNUP_KEY:-}
       DATABASE_PATH: /app/data/helpdesk.db
       UPLOAD_FOLDER: /app/uploads
     volumes:

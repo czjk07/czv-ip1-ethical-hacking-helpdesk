@@ -14,6 +14,7 @@ def create_app():
     app.config["SECRET_KEY"] = os.environ.get(
         "SECRET_KEY", "dev-only-secret-key-change-in-production"
     )
+    app.config["SUPPORT_SIGNUP_KEY"] = os.environ.get("SUPPORT_SIGNUP_KEY", "")
     app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
     app.config["UPLOAD_FOLDER"] = os.environ.get(
         "UPLOAD_FOLDER", os.path.join(base_dir, "uploads")
