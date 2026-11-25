@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: helpdesk-web
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-dev-only-secret-key-change-in-production}
+      DATABASE_PATH: /app/data/helpdesk.db
+      UPLOAD_FOLDER: /app/uploads
+    volumes:
+      - db_data:/app/data
+      - uploads_data:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  uploads_data:

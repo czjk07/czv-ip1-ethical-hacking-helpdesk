@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - HelpDesk{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">My Tickets</h1>
+  <a href="{{ url_for('tickets.new_ticket') }}" class="btn btn-primary">+ Create New Ticket</a>
+</div>
+{% if tickets %}
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th><th>Title</th><th>Priority</th><th>Status</th><th>Created</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tickets %}
+        <tr>
+          <td>{{ t.id }}</td>
+          <td>{{ t.title }}</td>
+          <td>
+            <span class="badge text-bg-{{ 'danger' if t.priority == 'High' else ('warning' if t.priority == 'Medium' else 'secondary') }}">{{ t.priority }}</span>
+          </td>
+          <td>
+            <span class="badge text-bg-{{ 'success' if t.status == 'Closed' else ('warning' if t.status == 'In Progress' else 'primary') }}">{{ t.status }}</span>
+          </td>
+          <td>{{ t.created_at }}</td>
+          <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('tickets.ticket_detail', ticket_id=t.id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info mb-0">You have no tickets yet. Click "Create New Ticket" to get help.</div>
+{% endif %}
+{% endblock %}
