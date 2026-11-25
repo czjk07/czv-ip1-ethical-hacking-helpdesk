@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     description TEXT NOT NULL,
     priority TEXT NOT NULL DEFAULT 'Medium' CHECK (priority IN ('Low', 'Medium', 'High')),
     status TEXT NOT NULL DEFAULT 'Open' CHECK (status IN ('Open', 'In Progress', 'Closed')),
+    assignee_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     attachment TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -54,4 +55,10 @@ def close_db(error=None):
 def init_db():
     db = get_db()
     db.executescript(SCHEMA)
+    columns = [row["name"] for row in db.execute("PRAGMA table_info(tickets)")]
+    if "assignee_id" not in columns:
+        db.execute(
+            "ALTER TABLE tickets ADD COLUMN assignee_id INTEGER REFERENCES users(id)"
+            " ON DELETE SET NULL"
+        )
     db.commit()

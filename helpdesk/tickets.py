@@ -124,6 +124,31 @@ def add_comment(ticket_id):
     return redirect(url_for("tickets.ticket_detail", ticket_id=ticket_id))
 
 
+@tickets_bp.route("/ticket/<int:ticket_id>/reopen", methods=["POST"])
+@login_required
+def reopen(ticket_id):
+    ticket = models.get_ticket(get_db(), ticket_id)
+    if ticket is None:
+        abort(404)
+    if not can_view_ticket(ticket):
+        abort(403)
+
+    if ticket["status"] != "Closed":
+        flash("Only closed tickets can be reopened.", "error")
+        return redirect(url_for("tickets.ticket_detail", ticket_id=ticket_id))
+
+    body = request.form.get("body", "").strip()
+    if not body:
+        flash("Please add a comment explaining why you are reopening the ticket.", "error")
+        return redirect(url_for("tickets.ticket_detail", ticket_id=ticket_id))
+
+    db = get_db()
+    models.add_comment(db, ticket_id, session["user_id"], body)
+    models.reopen_ticket(db, ticket_id)
+    flash("Ticket reopened.", "success")
+    return redirect(url_for("tickets.ticket_detail", ticket_id=ticket_id))
+
+
 @tickets_bp.route("/search")
 @login_required
 def search():

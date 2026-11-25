@@ -10,7 +10,8 @@ A complete helpdesk web application built with **Python (Flask)**, **SQLite** an
 - Ticket creation (`/ticket/new`) with title, description, priority (Low / Medium / High) and an optional attachment (PDF / PNG / JPG, max 5 MB) saved to `uploads/`.
 - Ticket detail page (`/ticket/<id>`) with attachment link and a comments/replies section.
 - Ticket search (`/search?q=...`) by title or description (clients search their own tickets, support searches all).
-- Support/admin panel (`/admin`) with an overview of all tickets and inline status changes (Open / In Progress / Closed).
+- Support/admin panel (`/admin`) with an overview of all tickets, inline status changes (Open / In Progress / Closed), ticket assignment to support users, and a mandatory resolution note when closing a ticket (stored as a comment).
+- Clients see status and assignee on their dashboard and ticket pages, and can reopen a closed ticket with an explanatory comment.
 
 ## Run with Docker (single command)
 

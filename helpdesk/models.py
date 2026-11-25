@@ -46,25 +46,36 @@ def set_ticket_attachment(db, ticket_id, attachment):
     db.commit()
 
 
+def list_support_users(db):
+    return db.execute(
+        "SELECT id, username FROM users WHERE role = 'support' ORDER BY username"
+    ).fetchall()
+
+
 def get_ticket(db, ticket_id):
     return db.execute(
-        "SELECT t.*, u.username AS owner_username FROM tickets t"
-        " JOIN users u ON u.id = t.user_id WHERE t.id = ?",
+        "SELECT t.*, u.username AS owner_username, a.username AS assignee_username"
+        " FROM tickets t JOIN users u ON u.id = t.user_id"
+        " LEFT JOIN users a ON a.id = t.assignee_id WHERE t.id = ?",
         (ticket_id,),
     ).fetchone()
 
 
 def list_tickets_by_user(db, user_id):
     return db.execute(
-        "SELECT * FROM tickets WHERE user_id = ? ORDER BY created_at DESC, id DESC",
+        "SELECT t.*, a.username AS assignee_username FROM tickets t"
+        " LEFT JOIN users a ON a.id = t.assignee_id WHERE t.user_id = ?"
+        " ORDER BY t.created_at DESC, t.id DESC",
         (user_id,),
     ).fetchall()
 
 
 def list_all_tickets(db):
     return db.execute(
-        "SELECT t.*, u.username AS owner_username FROM tickets t"
-        " JOIN users u ON u.id = t.user_id ORDER BY t.created_at DESC, t.id DESC"
+        "SELECT t.*, u.username AS owner_username, a.username AS assignee_username"
+        " FROM tickets t JOIN users u ON u.id = t.user_id"
+        " LEFT JOIN users a ON a.id = t.assignee_id"
+        " ORDER BY t.created_at DESC, t.id DESC"
     ).fetchall()
 
 
@@ -75,8 +86,9 @@ def search_tickets(db, query, user_id=None):
         + "%"
     )
     sql = (
-        "SELECT t.*, u.username AS owner_username FROM tickets t"
-        " JOIN users u ON u.id = t.user_id"
+        "SELECT t.*, u.username AS owner_username, a.username AS assignee_username"
+        " FROM tickets t JOIN users u ON u.id = t.user_id"
+        " LEFT JOIN users a ON a.id = t.assignee_id"
         " WHERE (t.title LIKE ? ESCAPE '\\' OR t.description LIKE ? ESCAPE '\\')"
     )
     params = [pattern, pattern]
@@ -91,6 +103,24 @@ def update_ticket_status(db, ticket_id, status):
     db.execute(
         "UPDATE tickets SET status = ?, updated_at = datetime('now') WHERE id = ?",
         (status, ticket_id),
+    )
+    db.commit()
+
+
+def assign_ticket(db, ticket_id, assignee_id):
+    db.execute(
+        "UPDATE tickets SET assignee_id = ?, updated_at = datetime('now')"
+        " WHERE id = ?",
+        (assignee_id, ticket_id),
+    )
+    db.commit()
+
+
+def reopen_ticket(db, ticket_id):
+    db.execute(
+        "UPDATE tickets SET status = 'Open', updated_at = datetime('now')"
+        " WHERE id = ?",
+        (ticket_id,),
     )
     db.commit()
 
