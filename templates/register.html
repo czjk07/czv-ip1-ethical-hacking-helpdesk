@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Register - HelpDesk{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3 text-center">Create an account</h1>
+        <form method="post" action="{{ url_for('auth.register') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" minlength="3" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirm" class="form-label">Confirm password</label>
+            <input type="password" class="form-control" id="confirm" name="confirm" minlength="6" required>
+          </div>
+          <div class="mb-3">
+            <label for="support_key" class="form-label">Support signup key <span class="text-muted">(optional, for support staff only)</span></label>
+            <input type="password" class="form-control" id="support_key" name="support_key" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+        <p class="text-center mt-3 mb-0">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
