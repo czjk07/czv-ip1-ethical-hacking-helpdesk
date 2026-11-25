@@ -96,10 +96,8 @@ def new_ticket():
 @login_required
 def ticket_detail(ticket_id):
     ticket = models.get_ticket(get_db(), ticket_id)
-    if ticket is None:
+    if ticket is None or not can_view_ticket(ticket):
         abort(404)
-    if not can_view_ticket(ticket):
-        abort(403)
     comments = models.list_comments(get_db(), ticket_id)
     return render_template(
         "ticket_detail.html", ticket=ticket, comments=comments
@@ -110,10 +108,8 @@ def ticket_detail(ticket_id):
 @login_required
 def add_comment(ticket_id):
     ticket = models.get_ticket(get_db(), ticket_id)
-    if ticket is None:
+    if ticket is None or not can_view_ticket(ticket):
         abort(404)
-    if not can_view_ticket(ticket):
-        abort(403)
 
     body = request.form.get("body", "").strip()
     if not body:
@@ -128,10 +124,8 @@ def add_comment(ticket_id):
 @login_required
 def reopen(ticket_id):
     ticket = models.get_ticket(get_db(), ticket_id)
-    if ticket is None:
+    if ticket is None or not can_view_ticket(ticket):
         abort(404)
-    if not can_view_ticket(ticket):
-        abort(403)
 
     if ticket["status"] != "Closed":
         flash("Only closed tickets can be reopened.", "error")

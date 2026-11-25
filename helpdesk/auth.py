@@ -105,7 +105,7 @@ def login():
             session["role"] = user["role"]
             flash(f"Welcome back, {user['username']}!", "success")
             next_url = request.args.get("next")
-            if next_url and next_url.startswith("/"):
+            if next_url and next_url.startswith("/") and not next_url.startswith("//"):
                 return redirect(next_url)
             return redirect(url_for("tickets.dashboard"))
 

@@ -15,6 +15,8 @@ def create_app():
         "SECRET_KEY", "dev-only-secret-key-change-in-production"
     )
     app.config["SUPPORT_SIGNUP_KEY"] = os.environ.get("SUPPORT_SIGNUP_KEY", "")
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
     app.config["UPLOAD_FOLDER"] = os.environ.get(
         "UPLOAD_FOLDER", os.path.join(base_dir, "uploads")
@@ -26,6 +28,20 @@ def create_app():
     os.makedirs(os.path.dirname(app.config["DATABASE"]), exist_ok=True)
 
     app.teardown_appcontext(close_db)
+
+    @app.after_request
+    def set_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "img-src 'self' data:; "
+            "font-src 'self' https://cdn.jsdelivr.net"
+        )
+        return response
 
     with app.app_context():
         init_db()
